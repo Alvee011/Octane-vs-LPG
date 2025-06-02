@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Octane vs LPG Cost Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #fef9ff; /* A very light, almost white lavender */
+        }
+
+        .input-field {
+            transition: all 0.3s ease;
+            /* Default border and shadow can be defined here or rely on Tailwind */
+        }
+
+        .input-field:focus {
+            border-color: #3b82f6; /* Tailwind's blue-500 */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); /* Light blue shadow */
+        }
+
+        .result-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Tailwind's shadow-lg */
+        }
+
+        .savings-highlight {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); /* Tailwind's green-500 with opacity */
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-blue-700 mb-2">Octane vs LPG Cost Calculator</h1>
+            <p class="text-gray-600 text-sm md:text-base">Compare fuel costs and see how much you can save with LPG</p>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-xl p-6 md:p-8 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                    <h2 class="text-xl font-semibold text-gray-800 border-b pb-2">Vehicle Details</h2>
+                
+                <div>
+                    <label for="distance" class="block text-sm font-medium text-gray-700 mb-1">Total Distance (km)</label>
+                    <input type="number" id="distance" class="input-field w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" placeholder="e.g., 1000km" value="1000">
+                </div>
+                
+                <div>
+                    <label for="octaneMileage" class="block text-sm font-medium text-gray-700 mb-1">Octane Mileage (km/L)</label>
+                    <input type="number" id="octaneMileage" class="input-field w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" placeholder="e.g. 8km/L" value="8">
+                </div>
+            </div>
+            
+            <div class="space-y-4">
+                <h2 class="text-xl font-semibold text-gray-800 border-b pb-2">Fuel Prices</h2>
+                
+                <div>
+                    <label for="octanePrice" class="block text-sm font-medium text-gray-700 mb-1">Octane Price (tk/L)</label>
+                    <input type="number" id="octanePrice" class="input-field w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" value="122">
+                </div>
+                
+                <div>
+                    <label for="lpgPrice" class="block text-sm font-medium text-gray-700 mb-1">LPG Price (tk/L)</label>
+                    <input type="number" id="lpgPrice" class="input-field w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" value="67">
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-6 text-center">
+            <button id="calculateBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                Calculate Savings
+            </button>
+        </div>
+    </div>
+
+    <div id="resultsSection" class="hidden">
+        <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Cost Comparison Results</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="result-card bg-white rounded-lg shadow-md p-5 border-t-4 border-blue-500">
+                <h3 class="text-lg font-semibold text-blue-700 mb-3">Octane Cost</h3>
+                <div class="space-y-2 text-gray-600">
+                    <p>Fuel Required: <span id="octaneLiters" class="font-medium text-gray-800">0</span> L</p>
+                    <p>Cost per Liter: <span id="octanePriceDisplay" class="font-medium text-gray-800">0</span> tk</p>
+                    <div class="pt-2 mt-2 border-t border-gray-200">
+                        <p class="text-xl font-bold text-blue-600">Total: <span id="octaneCost">0</span> tk</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="result-card bg-white rounded-lg shadow-md p-5 border-t-4 border-green-500">
+                <h3 class="text-lg font-semibold text-green-700 mb-3">LPG Cost</h3>
+                <div class="space-y-2 text-gray-600">
+                    <p>Adjusted Mileage: <span id="lpgMileage" class="font-medium text-gray-800">0</span> km/L</p>
+                    <p>LPG Required: <span id="lpgLiters" class="font-medium text-gray-800">0</span> L</p>
+                    <p>Cost per Liter: <span id="lpgPriceDisplay" class="font-medium text-gray-800">0</span> tk</p>
+                    <div class="pt-2 mt-2 border-t border-gray-200">
+                        <p class="text-xl font-bold text-green-600">Total: <span id="lpgCost">0</span> tk</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="result-card savings-highlight bg-white rounded-lg shadow-md p-5 border-t-4 border-emerald-500">
+                <h3 class="text-lg font-semibold text-emerald-700 mb-3">Your Savings</h3>
+                <div class="flex flex-col items-center justify-center h-full">
+                    <div class="text-center">
+                        <p class="text-2xl font-bold text-emerald-600 mb-2">
+                            <span id="savingsAmount">0</span> tk
+                        </p>
+                        <p class="text-gray-600">by using LPG instead of Octane</p>
+                        <p class="mt-3 text-sm font-medium text-emerald-700">
+                            That's <span id="savingsPercentage">0</span>% less!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">Detailed Comparison</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead>
+                        <tr>
+                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Metric</th>
+                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Octane</th>
+                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">LPG</th>
+                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Difference</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Mileage (km/L)</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="tableMileageOctane">0</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="tableMileageLPG">0</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">-15%</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Fuel Required (L)</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="tableLitersOctane">0</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="tableLitersLPG">0</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="tableLitersDiff">0</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Cost per Liter (tk)</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="tablePriceOctane">0</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="tablePriceLPG">0</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="tablePriceDiff">0</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Total Cost (tk)</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600" id="tableCostOctane">0</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600" id="tableCostLPG">0</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-emerald-600" id="tableSavings">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Copyright Footer (ALVEE)-->
+    <div class="mt-10 text-center text-gray-600 text-sm py-4 border-t border-gray-200">
+        © 2025 Octane vs. LPG Car Running Cost Calculator | Designed By Faruque Azam Alvee
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set up the calculate button
+        const calculateBtn = document.getElementById('calculateBtn');
+        calculateBtn.addEventListener('click', calculateCosts);
+        
+        // Calculate on page load with default values
+        calculateCosts();
+        
+        function calculateCosts() {
+            // Get input values
+            const distance = parseFloat(document.getElementById('distance').value) || 0;
+            const octaneMileage = parseFloat(document.getElementById('octaneMileage').value) || 0;
+            const octanePrice = parseFloat(document.getElementById('octanePrice').value) || 0;
+            const lpgPrice = parseFloat(document.getElementById('lpgPrice').value) || 0;
+            
+            // Validate inputs
+            if (distance <= 0 || octaneMileage <= 0 || octanePrice <= 0 || lpgPrice <= 0) {
+                alert('Please enter valid positive numbers for all fields.');
+                return;
+            }
+            
+            // Calculate Octane costs
+            const octaneLiters = distance / octaneMileage;
+            const octaneCost = octaneLiters * octanePrice;
+            
+            // Calculate LPG costs (15% lower mileage)
+            const lpgMileage = octaneMileage * 0.85;
+            const lpgLiters = distance / lpgMileage;
+            const lpgCost = lpgLiters * lpgPrice;
+            
+            // Calculate savings
+            const savings = octaneCost - lpgCost;
+            const savingsPercentage = (savings / octaneCost) * 100;
+            
+            // Update the results section
+            document.getElementById('resultsSection').classList.remove('hidden');
+            
+            // Update Octane card
+            document.getElementById('octaneLiters').textContent = octaneLiters.toFixed(2);
+            document.getElementById('octanePriceDisplay').textContent = octanePrice.toFixed(2);
+            document.getElementById('octaneCost').textContent = octaneCost.toFixed(2);
+            
+            // Update LPG card
+            document.getElementById('lpgMileage').textContent = lpgMileage.toFixed(2);
+            document.getElementById('lpgLiters').textContent = lpgLiters.toFixed(2);
+            document.getElementById('lpgPriceDisplay').textContent = lpgPrice.toFixed(2);
+            document.getElementById('lpgCost').textContent = lpgCost.toFixed(2);
+            
+            // Update Savings card
+            document.getElementById('savingsAmount').textContent = savings.toFixed(2);
+            document.getElementById('savingsPercentage').textContent = savingsPercentage.toFixed(1);
+            
+            // Update comparison table
+            document.getElementById('tableMileageOctane').textContent = octaneMileage.toFixed(2);
+            document.getElementById('tableMileageLPG').textContent = lpgMileage.toFixed(2);
+            document.getElementById('tableLitersOctane').textContent = octaneLiters.toFixed(2);
+            document.getElementById('tableLitersLPG').textContent = lpgLiters.toFixed(2);
+            document.getElementById('tableLitersDiff').textContent = (lpgLiters - octaneLiters).toFixed(2);
+            document.getElementById('tablePriceOctane').textContent = octanePrice.toFixed(2);
+            document.getElementById('tablePriceLPG').textContent = lpgPrice.toFixed(2);
+            document.getElementById('tablePriceDiff').textContent = (lpgPrice - octanePrice).toFixed(2);
+            document.getElementById('tableCostOctane').textContent = octaneCost.toFixed(2);
+            document.getElementById('tableCostLPG').textContent = lpgCost.toFixed(2);
+            document.getElementById('tableSavings').textContent = savings.toFixed(2);
+        }
+    });
+    </script>
+</body>
+</html>
