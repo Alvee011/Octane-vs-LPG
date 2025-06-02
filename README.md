@@ -1,30 +1,26 @@
-**Objective:** Develop a calculator that computes and compares the running costs of a car using Octane versus LPG. The calculator should clearly display the potential monetary savings achieved by using LPG for a given distance.
+Its primary purpose is to allow users to input details about their vehicle's travel distance, Octane mileage, and current fuel prices for both Octane and LPG. Based on this input, it calculates and compares the total running costs for both fuel types, highlighting the potential monetary savings if LPG is used. It also provides a detailed breakdown of these calculations.
+
+**Objective:** The calculator clearly displays the potential monetary savings achieved by using LPG for a given distance.
 
 **User Inputs:**
-1. Total Kilometers Traveled:
-Description: The total distance the car will travel.
+1. Total Kilometers Traveled: The total distance the car will travel.
 Type: Numeric (e.g., 1000)
 Example Label: "Total Distance (km)"
-2. Car Mileage on Octane:
-Description: The fuel efficiency of the car when running on Octane.
+2. Car Mileage on Octane: The fuel efficiency of the car when running on Octane.
 Type: Numeric (e.g., 10 for 10 km per liter)
 Example Label: "Octane Mileage (km/L)"
-3. Octane Price per Liter:
-Description: The current price of Octane per liter.
+3. Octane Price per Liter: The current price of Octane per liter.
 Type: Numeric
 Default Value: 122 (tk)
 Example Label: "Octane Price (tk/L)"
-4. LPG Price per Liter:
-Description: The current price of LPG per liter.
+4. LPG Price per Liter: The current price of LPG per liter.
 Type: Numeric
 Default Value: 67 (tk)
 Example Label: "LPG Price (tk/L)"
 
 **Calculation Logic:**
 
-1. Octane Cost Calculation:
-
-Calculate liters of Octane needed: octane_liters = total_km_traveled / car_mileage_on_octane
+1. Octane Cost Calculation: Calculate liters of Octane needed: octane_liters = total_km_traveled / car_mileage_on_octane
 Calculate total cost for Octane: total_octane_cost = octane_liters * octane_price_per_liter
 LPG Mileage Calculation:
 
